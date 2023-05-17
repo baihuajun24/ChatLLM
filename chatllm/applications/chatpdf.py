@@ -7,7 +7,8 @@
 # @WeChat       : meutils
 # @Software     : PyCharm
 # @Description  :
-
+import glob
+from pathlib import Path
 from meutils.pipe import *
 from meutils.office_automation.pdf import extract_text, pdf2text
 
@@ -25,30 +26,46 @@ class ChatPDF(ChatANN):
         texts = extract_text(file_or_text)
         texts = textsplitter(texts)
         return super().create_index(texts)
+    
+    def create_index_list(self, file_list, textsplitter=textsplitter):  # todo 多篇 增加 parser loader
+        text_array = list()
+        for file in file_list:
+            texts = extract_text(file)
+            texts = textsplitter(texts)
+            text_array.extend(texts)
+        return super().create_index(text_array)
 
 
 if __name__ == '__main__':
-    # filename = '../../data/财报.pdf'
-    # bytes_array = Path(filename).read_bytes()
-    # texts = extract_text(bytes_array)
-    # texts = textsplitter(texts)
-    # print(texts)
-    from chatllm.applications.chatpdf import ChatPDF
-
+    # from chatllm.applications.chatpdf import ChatPDF
     qa = ChatPDF(encode_model='nghuyong/ernie-3.0-nano-zh')  # 自动建索引
     # qa.create_index('../../data/财报.pdf')
     # qa.load_llm4chat(model_name_or_path='/Users/betterme/PycharmProjects/AI/CHAT_MODEL/chatglm', device='cpu')
     # qa.create_index('data/财报.pdf')
-    source = 'data/接种率文献/应用Kaplan-Meie...市首剂含麻疹成份疫苗接种率_王萌.pdf'
+    # sources = ['data/接种率文献/应用Kaplan-Meie...市首剂含麻疹成份疫苗接种率_王萌.pdf', 'data/接种率文献/卡普兰-迈耶(Kaplan...成分疫苗接种率评估中的应用_姜晓飞.pdf']
+    # sources = 'data/接种率文献/卡普兰-迈耶(Kaplan...成分疫苗接种率评估中的应用_姜晓飞.pdf'
+    directory = 'data/接种率文献/'  # Change to your directory
+    sources = glob.glob(directory + '*.pdf')
     query = '延迟接种属于疫苗犹豫吗？'
-    qa.create_index(source)
+
+    # for understanding how code works
+    # bytes_array = Path(sources).read_bytes()
+    # texts = extract_text(bytes_array)
+    # texts = textsplitter(texts)
+    # for i, text in enumerate(texts):
+    #     print(f"split text {i}: {text}")
+
+    # qa.create_index(sources)
+    qa.create_index_list(sources)
     # AssertionError: Torch not compiled with CUDA enabled
-    qa.load_llm4chat(model_name_or_path='D:\huajun\chatGLM\chatGLM\chatglm-6B', device='cpu')
+    qa.load_llm4chat(model_name_or_path='D:\huajun\chatGLM\chatGLM\chatglm-6B', device='cuda')
 
     # list(qa(query='东北证券主营业务', topk=1, threshold=0.8))
-    list(qa(query=query, topk=1, threshold=0.8))
+    list(qa(query=query, topk=3, threshold=0.8))
 
     # 召回结果
-    print(f"Ask source is: {source}")
+    print(f"Ask sources are: {sources}")
     print(f"query is {query}")
     print(qa.recall)
+    print(type(qa.recall))
+    print(qa.recall['text'])
