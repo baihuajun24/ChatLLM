@@ -44,9 +44,14 @@ if __name__ == '__main__':
     # qa.create_index('data/财报.pdf')
     # sources = ['data/接种率文献/应用Kaplan-Meie...市首剂含麻疹成份疫苗接种率_王萌.pdf', 'data/接种率文献/卡普兰-迈耶(Kaplan...成分疫苗接种率评估中的应用_姜晓飞.pdf']
     # sources = 'data/接种率文献/卡普兰-迈耶(Kaplan...成分疫苗接种率评估中的应用_姜晓飞.pdf'
-    directory = 'data/接种率文献/'  # Change to your directory
-    sources = glob.glob(directory + '*.pdf')
-    query = '延迟接种属于疫苗犹豫吗？'
+    # directory = 'data/接种率文献/'  # Change to your directory
+    # directory = 'D:/huajun/chatGLM/chatGLM/track2-data/track2-问答式科研知识库'
+    # directory = '../chatGLM/track2-data/track2-问答式科研知识库'
+    # sources = glob.glob(directory + '*.pdf')
+    sources = ['../chatGLM/track2-data/track2-问答式科研知识库/1.pdf', '../chatGLM/track2-data/track2-问答式科研知识库/2.pdf']
+    print(sources)
+    query = 'LLama和GPT两个模型在技术路线上有何不同'
+    # query = '延迟接种属于疫苗犹豫吗？'
 
     # for understanding how code works
     # bytes_array = Path(sources).read_bytes()
@@ -57,7 +62,6 @@ if __name__ == '__main__':
 
     # qa.create_index(sources)
     qa.create_index_list(sources)
-    # AssertionError: Torch not compiled with CUDA enabled
     qa.load_llm4chat(model_name_or_path='D:\huajun\chatGLM\chatGLM\chatglm-6B', device='cuda')
 
     # list(qa(query='东北证券主营业务', topk=1, threshold=0.8))
